@@ -1,0 +1,53 @@
+%--------------------------------------------------------------------------
+% Evaluates the constitutive tensor for material type 9.
+%--------------------------------------------------------------------------
+function c   = ctens9(kinematics,properties,dim)
+mu           = properties(2);
+lambda       = 2*mu;
+lambda_princ = kinematics.lambda;
+J            = kinematics.J;
+sigma_aa     = 2*mu*log(lambda_princ) + lambda*log(J);
+T            = kinematics.n; 
+c            = zeros(dim,dim,dim,dim);
+B            = inv(c); 
+
+
+Svol = J^(1/3)*(J-1)*k*inv(c);
+
+
+cvol = F*Svol*F.';
+ciso = 2*mu*(B*B-.5*(B*B+B*B))-(2/3)*(mu+2*mu*I)*(B*lambda+B*lambda_princ)+(4/3)*mu*(B^2*lambda+B^2*lambda_princ)+(2/9)*(mu*I+4*mu*I)
+
+
+
+
+
+
+
+for l=1:dim
+    for k=1:dim
+        for j=1:dim
+            for i=1:dim
+                sum    =  0;
+                for alpha=1:dim    
+                    sum = sum + (2*(mu - sigma_aa(alpha)))*T(i,alpha)*T(j,alpha)*T(k,alpha)*T(l,alpha);
+                    for beta=1:dim 
+                        sum      = sum + lambda*(T(i,alpha)*T(j,alpha)*T(k,beta)*T(l,beta));
+                        lambda_a = lambda_princ(alpha);
+                        lambda_b = lambda_princ(beta);
+                        sigma_a  = sigma_aa(alpha);
+                        sigma_b  = sigma_aa(beta);
+                        if  (alpha ~= beta)
+                            sum  = sum + muab_choice(lambda_a,lambda_b,...
+                                   sigma_a,sigma_b,1,mu)*(T(i,alpha)*T(j,beta)*(T(k,alpha)*...
+                                                          T(l,beta)+T(k,beta)*T(l,alpha)));                        
+                        end
+                    end
+                end
+                c(i,j,k,l) = c(i,j,k,l) + sum;
+            end
+        end
+    end    
+end
+
+
