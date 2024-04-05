@@ -1,0 +1,15 @@
+%--------------------------------------------------------------------------
+% Evaluates the Cauchy stress tensor for material type 8.
+%--------------------------------------------------------------------------
+function Cauchy = stress8(kinematics,properties,dim)
+mu              = properties(2);
+lambda          = 2*mu;
+J               = kinematics.J;
+F = kinematics.F;
+B = kinematics.b;
+
+
+Siso
+
+
+
